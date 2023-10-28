@@ -118,6 +118,7 @@ defmodule Ash.Query do
   alias Ash.Error.Load.{InvalidQuery, NoSuchRelationship}
   alias Ash.Query.{Aggregate, Calculation}
 
+  require Ash.Flags
   require Ash.Tracer
   import Ash.Filter.TemplateHelpers, only: [expr?: 1]
 
@@ -532,7 +533,14 @@ defmodule Ash.Query do
       if has_argument?(action, name) do
         set_argument(query, name, value)
       else
-        query
+        if Ash.Flags.ash_three?() do
+          add_error(
+            query,
+            InvalidArgument.exception(field: name, value: value, message: "Unknown argument")
+          )
+        else
+          query
+        end
       end
     end)
   end

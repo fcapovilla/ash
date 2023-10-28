@@ -60,6 +60,19 @@ defmodule Ash.Test.QueryTest do
       query = Ash.Query.for_read(User, :by_id, %{id: "foobar"})
       assert [%Ash.Error.Query.InvalidArgument{field: :id}] = query.errors
     end
+
+    @tag :ash_three
+    test "it returns an appropriate error for unknown arguments in Ash 3.0" do
+      assert [
+               %Ash.Error.Query.InvalidArgument{
+                 class: :invalid,
+                 field: :one,
+                 value: 1,
+                 message: "Unknown argument",
+                 path: []
+               }
+             ] = Ash.Query.for_read(User, :by_id, %{id: Ash.UUID.generate(), one: 1}).errors
+    end
   end
 
   describe "sensitive attributes" do
