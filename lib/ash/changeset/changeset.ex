@@ -233,6 +233,7 @@ defmodule Ash.Changeset do
     Invalid.NoSuchResource
   }
 
+  require Ash.Flags
   require Ash.Tracer
   require Ash.Expr
   require Logger
@@ -1154,7 +1155,14 @@ defmodule Ash.Changeset do
           end
 
         true ->
-          changeset
+          if Ash.Flags.ash_three?() do
+            add_error(
+              changeset,
+              InvalidArgument.exception(field: name, value: value, message: "Unknown argument")
+            )
+          else
+            changeset
+          end
       end
     end)
   end

@@ -980,6 +980,24 @@ defmodule Ash.Test.Changeset.ChangesetTest do
                }).errors
     end
 
+    @tag :ash_three
+    test "unknown arguments return errors in Ash 3.0" do
+      assert [
+               %Ash.Error.Changes.InvalidArgument{
+                 class: :invalid,
+                 field: "one",
+                 value: 1,
+                 message: "Unknown argument",
+                 path: []
+               }
+             ] =
+               Ash.Changeset.for_create(Category, :create_with_confirmation, %{
+                 "name" => "foo",
+                 "confirm_name" => "foo",
+                 "one" => 1
+               }).errors
+    end
+
     test "for_action works the same as calling for_<action>" do
       changeset_1 =
         Category
